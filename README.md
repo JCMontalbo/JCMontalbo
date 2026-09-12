@@ -14,11 +14,11 @@ I take problems from first-principles formulation to deployed software: inverse 
 
 ## Research
 
-My published work is in inverse problems and sparse reconstruction — recovering structure from incomplete or degraded measurements. The repos below are reproducible re-implementations on synthetic data.
+My research is in inverse problems and sparse reconstruction — recovering structure from incomplete or degraded measurements, then using what was recovered to generate new data. The repos below are reproducible re-implementations on synthetic data.
 
 | Topic | What it is | Repo |
 |---|---|---|
-| **Optical flow as an inverse problem** | Variational (Horn–Schunck-style) motion estimation with PDE regularization, plus forward propagation of the recovered field to synthesize intermediate frames. Core of my dissertation. | [optical-flow-inverse](https://github.com/JCMontalbo/optical-flow-inverse) |
+| **Optical flow as a generator of new images** | Recover the motion field between two frames (Horn–Schunck, regularized inverse problem), then transform it — globally, inside Gaussian windows, or by area-preserving generators — and propagate the first frame along the result to create families of geometry-respecting synthetic images. My dissertation, reimplemented on synthetic data; runs on any two frames of your own. | [optical-flow-inverse](https://github.com/JCMontalbo/optical-flow-inverse) |
 | **Compressive sensing for radar imaging** | Sparse ISAR reconstruction from undersampled measurements via ℓ₁ minimization (ISTA/FISTA), benchmarked against backprojection. | `cs-radar-imaging` *(coming)* |
 | **Compressive sensing for noisy video** | Sparse recovery of video frames from noisy, compressed measurements. | `cs-video-recovery` *(coming)* |
 
