@@ -14,11 +14,27 @@ I take problems from first-principles formulation to deployed software: inverse 
 
 ## Research
 
-My research is in inverse problems and sparse reconstruction — recovering structure from incomplete or degraded measurements, then using what was recovered to generate new data. The repos below are reproducible re-implementations on synthetic data.
+My research is in inverse problems and sparse reconstruction — recovering structure from incomplete or degraded measurements, then using what was recovered to generate new data. The repos below are reproducible re-implementations; every number comes from a script in the repo.
+
+### [optical-flow-inverse](https://github.com/JCMontalbo/optical-flow-inverse) — my dissertation, reimplemented and finally tested
+
+Recover the motion field between two images (Horn–Schunck, a regularized inverse problem), transform it — globally, inside Gaussian windows, or by area-preserving generators — and propagate the first image *and its label* along the result. The dissertation proposed this as training-data augmentation for anatomy, where flipping or rotating an image produces an impossible patient, but never had time to test it. This repo does, with the pass/fail criteria pre-registered in git before each run:
+
+<p align="center">
+<img src="https://raw.githubusercontent.com/JCMontalbo/optical-flow-inverse/main/figures/heart_augmentation.gif" width="100%" alt="one labelled MRI slice; each frame a fresh sample from each augmentation arm">
+</p>
+
+| setting | labels | recovered-flow augmentation | best alternative | verdict |
+|---|---|---|---|---|
+| **Cardiac MRI** (MSD Heart, left atrium, 3D Dice on 6 held-out patients) | 1 slice / patient | **0.680** | 0.634 random elastic · 0.568 plausible affine · 0.581 none | **wins** (+11 over affine, +4.6 over elastic; 3 seeds) |
+| | 2 slices / patient | **0.842** | 0.833 elastic | still first, within 1 pt |
+| | 4+ slices / patient | 0.868 | 0.885 affine | advantage gone, as expected |
+| **Natural video** (DAVIS 2016, J-mean) | 1–2 frames / video | 0.337 / 0.383 | **0.385 / 0.420** flip-rotate-scale | **loses** — a flipped bear is still a bear |
+
+The claim holds where it was made for and fails where it was never meant to apply; both are in the README. Also in the repo: the flow-based video work (streaming augmentation, held-out frame synthesis at 32.9 dB vs 30.0 dB blend, 4× slow motion, synthetic clip families) and labels carried through video and through an MRI volume from a single annotated slice (IoU 0.91 at 5 slices, 0.83 at 10). 34 tests, CI on 3.10–3.13.
 
 | Topic | What it is | Repo |
 |---|---|---|
-| **Optical flow as a generator of new images** | Recover the motion field between two frames (Horn–Schunck, regularized inverse problem), then transform it — globally, inside Gaussian windows, or by area-preserving generators — and propagate the first frame along the result to create families of geometry-respecting synthetic images. My dissertation, reimplemented on synthetic data; runs on any two frames of your own. | [optical-flow-inverse](https://github.com/JCMontalbo/optical-flow-inverse) |
 | **Compressive sensing for radar imaging** | Sparse ISAR reconstruction from undersampled measurements via ℓ₁ minimization (ISTA/FISTA), benchmarked against backprojection. | `cs-radar-imaging` *(coming)* |
 | **Compressive sensing for noisy video** | Sparse recovery of video frames from noisy, compressed measurements. | `cs-video-recovery` *(coming)* |
 
