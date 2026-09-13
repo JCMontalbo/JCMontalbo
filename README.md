@@ -3,7 +3,7 @@
 **Senior Data Scientist · Applied Mathematics, Machine Learning, Scientific Computing**
 Austin, TX · [LinkedIn](https://linkedin.com/in/john-montalbo-phd) · j.montalb1@gmail.com
 
-I take problems from first-principles formulation to deployed software: inverse problems, physics-based simulation, computer vision, and machine learning. My PhD work was on the mathematics of motion estimation; my day job is turning that kind of math into production systems.
+I take problems from first-principles formulation to deployed software: inverse problems, physics-based simulation, computer vision, and machine learning. My graduate work was on recovering structure from incomplete measurements — motion from image pairs, images from undersampled radar — and my job since has been turning that kind of math into production systems.
 
 ## Selected results
 
@@ -14,41 +14,49 @@ I take problems from first-principles formulation to deployed software: inverse 
 
 ## Research
 
-My research is in inverse problems and sparse reconstruction — recovering structure from incomplete or degraded measurements, then using what was recovered to generate new data. The repos below are reproducible re-implementations; every number comes from a script in the repo.
+My research has one through-line: recover structure from incomplete or degraded measurements, then put what you recovered to work. In my PhD the measurements were two frames of a video and the structure was the motion between them; in my master's the measurements were undersampled radar signals and the structure was a sparse Fourier representation. Both theses stopped at the point where the ideas needed to be built and tested end to end. These two repositories finish that work. Every number comes from a script in the repo, and I wrote the pass/fail lines into git before running anything, so the misses sit next to the hits.
 
-### [optical-flow-inverse](https://github.com/JCMontalbo/optical-flow-inverse) — my dissertation, reimplemented and finally tested
+### [optical-flow-inverse](https://github.com/JCMontalbo/optical-flow-inverse) — my dissertation, built and tested
 
-Recover the motion field between two images (Horn–Schunck, a regularized inverse problem), transform it — globally, inside Gaussian windows, or by area-preserving generators — and propagate the first image *and its label* along the result. The dissertation proposed this as training-data augmentation for anatomy, where flipping or rotating an image produces an impossible patient, but never had time to test it. This repo does, with the pass/fail criteria pre-registered in git before each run:
+My dissertation treated optical flow as an inverse problem: recover the motion field between two images (Horn–Schunck, with PDE regularization), and then — the part I cared about — *use* the recovered field. Scale it, gate it inside Gaussian windows, perturb it with area-preserving generators, and propagate the first image forward along the result. Every image you get is a plausible new image, because the motion it was made from was observed, not invented. I proposed this as training-data augmentation for medical imaging, where you cannot flip or rotate a slice without producing an impossible patient, and I ran out of time before I could test it. So the repo does, and it carries the labels along with the images, which is what makes the generated data trainable.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/JCMontalbo/optical-flow-inverse/main/figures/heart_predictions.gif" width="100%" alt="three segmenters trained on one labelled slice per patient, swept through a held-out patient">
 </p>
 
-*Three segmenters, each trained on **one** labelled slice per patient, swept through a patient none of them saw: truth in red; trained with plausible affine augmentation (orange), random elastic (green), and the recovered-flow family (cyan).*
+*Three segmenters, each trained on **one** labelled slice per patient, swept through a patient none of them saw: truth in red; trained with affine augmentation (orange), random elastic deformation (green), and my recovered-flow family (cyan).*
 
-| setting | labels | recovered-flow augmentation | best alternative | verdict |
+| setting | labels | recovered-flow augmentation | best alternative | outcome |
 |---|---|---|---|---|
-| **Cardiac MRI** (MSD Heart, left atrium, 3D Dice on 6 held-out patients) | 1 slice / patient | **0.680** | 0.634 random elastic · 0.568 plausible affine · 0.581 none | **wins** (+11 over affine, +4.6 over elastic; 3 seeds) |
-| | 2 slices / patient | **0.842** | 0.833 elastic | still first, within 1 pt |
-| | 4+ slices / patient | 0.868 | 0.885 affine | advantage gone, as expected |
-| **Natural video** (DAVIS 2016, J-mean) | 1–2 frames / video | 0.337 / 0.383 | **0.385 / 0.420** flip-rotate-scale | **loses** — a flipped bear is still a bear |
+| **Cardiac MRI** (MSD Heart, left atrium, 3D Dice on 6 held-out patients) | 1 slice / patient | **0.680** | 0.634 random elastic · 0.568 affine · 0.581 none | **best of five** (+11 over affine, +4.6 over elastic; 3 seeds) |
+| | 2 slices / patient | **0.842** | 0.833 elastic | still first, within a point |
+| | 4+ slices / patient | 0.868 | 0.885 affine | advantage gone, as I expected |
+| **Natural video** (DAVIS 2016, J-mean) | 1–2 frames / video | 0.337 / 0.383 | **0.385 / 0.420** flip-rotate-scale | loses — a flipped bear is still a bear, so flips are free there |
 
-The claim holds where it was made for and fails where it was never meant to apply; both are in the README. Also in the repo: the flow-based video work (streaming augmentation, held-out frame synthesis at 32.9 dB vs 30.0 dB blend, 4× slow motion, synthetic clip families) and labels carried through video and through an MRI volume from a single annotated slice (IoU 0.91 at 5 slices, 0.83 at 10). 34 tests, CI on 3.10–3.13.
+That is the result I hoped for in 2020: the method helps exactly where it was designed to help — anatomy, with very few labels — and fades as labels accumulate. The video result is the boundary of the claim, and it sits in the README next to the MRI result. The repo also has the video work the idea grew out of: streaming augmentation over a clip, new in-between frames validated against held-out real ones (32.9 dB vs 30.0 dB for blending), 4× slow motion, families of synthetic clips, and labels carried through a video and through an MRI volume from a single annotated slice (IoU 0.91 five slices away, 0.83 at ten). 34 tests, CI on Python 3.10–3.13.
 
-### [compressive-imaging](https://github.com/JCMontalbo/compressive-imaging) — my master's work, done the way its conclusion asked
+### [compressive-imaging](https://github.com/JCMontalbo/compressive-imaging) — my master's thesis, reproduced and carried through
 
-My master's thesis studied sparse approximation and ℓ₁ recovery for radar signals with off-the-shelf solvers, derived the radar scattering model without imaging with it, and closed by asking for "our own compressive sensing algorithm … within the radar system process." This repo writes the solvers from scratch (ISTA/FISTA, OMP, CoSaMP, IRLS, ADMM, a log-barrier interior point, Fourier-domain TV), each tested against theory, and then does what the thesis asked, with the pass/fail lines written down first:
+My master's thesis was about keeping less: take a signal's Fourier data, keep only the coefficients whose magnitude clears a threshold, zero the rest, and invert — and show that you lose very little. It derived the radar scattering model from Maxwell's equations, ran the thresholding on signals and images, tried ℓ₁ recovery from non-uniform samples with an off-the-shelf solver, and closed by saying the next step was to write our own solvers and use them inside a radar imaging process. This repo is that next step.
 
-| what | finding |
+<p align="center">
+<img src="https://raw.githubusercontent.com/JCMontalbo/compressive-imaging/main/figures/thesis_ratedistortion.png" width="100%" alt="fraction of Fourier coefficients kept versus reconstruction error, for signals and images">
+</p>
+
+*The thesis's idea measured as the rate–distortion curve it is: a natural image reconstructs to 8% error from **1%** of its Fourier coefficients and 4% from 5%. Dots are my K-ratio threshold; lines are plain top-k — they pick in the same order.*
+
+| | what I found |
 |---|---|
-| **The radar imaging the thesis pointed at** | Turntable ISAR built from the thesis's scattering model and sampled at 22.5 %. The decision that makes or breaks it: sparsity assumed in the *data* (15 % of its energy in its 39 largest samples) gives F1 0.54; in the *image* (exactly 39-sparse) gives **0.96, the full-data ceiling**, with or without noise. Plus the phase transition, sub-cell resolution (0.6 cells), and motion compensation that works on the compressed samples. |
-| **The thesis's own test signals** | Never sparse (aliased, off-bin tones: 93 % of energy in the top 10 coefficients) — which is why its ℓ₁ step "needed the original signal." With sparse tones, the thesis's own sampler and an interior-point solve recover exactly from **13 % of samples**; TV from 22 radial Fourier lines to 2.4 %. |
-| **A 2015 noisy-video paper I co-authored** | Its ranking reproduces (FISTA > IRLS > CoSaMP > OMP); its gain does not on textured footage. Motion-compensated residuals (flow from the repo above) add 0.3–0.5 dB; frame differencing hurts. Pre-registered 30 dB target not met. |
+| **The thresholding idea** | Works as claimed on natural images and on tones that sit on the DFT grid. The boundaries are on the same curve: sharp-edged images are not Fourier-compressible (which is why the thesis reaches for total variation on the phantom), and chirps are not compressible in any fixed basis. My §4.1 test signals were aliased off-bin tones and so were never truly sparse — that is why the ℓ₁ step in the thesis needed the original signal. With sparse tones, my own sampler and an interior-point solve recover exactly from **13% of the samples**; TV from 22 radial Fourier lines gives 2.4% error. |
+| **The radar imaging the thesis pointed at** | Turntable ISAR built from the thesis's scattering model and sampled at 22.5%. The decision that makes or breaks it is *where* you assume sparsity: in the phase history (15% of its energy in its 39 largest samples) you get F1 0.54; in the image (exactly 39-sparse) you get **0.96, the same as with all the data**, with or without noise. Plus the phase transition, resolving two scatterers 0.6 Fourier cells apart, and motion compensation that works on the compressed samples. |
+| **The solvers** | ISTA/FISTA, OMP, CoSaMP, IRLS, ADMM basis pursuit, a log-barrier interior-point method, and Fourier-domain TV, written from scratch and each tested against a property it must satisfy. The interior-point method is the one the thesis said it wanted to learn. |
+| **A 2015 noisy-video paper I co-authored** | Its method ranking reproduces (FISTA > IRLS > CoSaMP > OMP); its gain does not on textured footage, where column-DCT sparsity barely beats the noisy input. Motion-compensated residuals from the flow repo add 0.3–0.5 dB; frame differencing hurts. |
 
 **Publications**
 - *Sparse Representation for ISAR Image Reconstruction.* Proc. SPIE 9857, 2016.
 - *Compressive Sensing for Noisy Video Reconstruction.* Proc. SPIE 9484, 2015.
 - PhD dissertation: *Inverse Problems and Forward Propagation of Optical Flow*, UT Arlington, 2020.
+- MS thesis: *Compressive Sensing and Radar Imaging*, UT Rio Grande Valley, 2016.
 
 ## Systems I've built (private repositories)
 
