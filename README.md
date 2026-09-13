@@ -32,7 +32,7 @@ The same idea moved to the setting it was designed for. Here the "video" is a st
 <img src="https://raw.githubusercontent.com/JCMontalbo/optical-flow-inverse/main/figures/heart_propagation.gif" width="100%" alt="a label drawn on one MRI slice, carried through a held-out patient's volume along the recovered flow">
 </p>
 
-*A patient the model never saw. I labelled the left atrium on one slice (red is the ground truth on every slice); the cyan outline is that single label carried up and down the volume along the recovered slice-to-slice flow — IoU 0.91 five slices away, 0.83 at ten. Every synthetic slice made by perturbing that flow arrives with its label the same way, which is what let me train on it. That training is the experiment below.*
+*A patient the model never saw. I labelled the left atrium on one slice in the middle of the volume (red is the ground truth on every slice); the cyan outline is that single label carried outward along the recovered slice-to-slice flow — first up through the volume, then back to the seed and down. Seeding in the middle matters: an organ grows and then shrinks as you move through the slices, so a label started at one end would have to survive twice the distance. It holds about ten slices each way — IoU 0.91 at five, 0.83 at ten. Every synthetic slice made by perturbing that flow arrives with its label the same way, which is what let me train on it. That training is the experiment below.*
 
 | setting | labels | recovered-flow augmentation | best alternative | outcome |
 |---|---|---|---|---|
