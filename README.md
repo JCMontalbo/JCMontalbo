@@ -40,10 +40,10 @@ That is the result I hoped for in 2020: the method helps exactly where it was de
 My master's thesis was about keeping less: take a signal's Fourier data, keep only the coefficients whose magnitude clears a threshold, zero the rest, and invert — and show that you lose very little. It derived the radar scattering model from Maxwell's equations, ran the thresholding on signals and images, tried ℓ₁ recovery from non-uniform samples with an off-the-shelf solver, and closed by saying the next step was to write our own solvers and use them inside a radar imaging process. This repo is that next step.
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/JCMontalbo/compressive-imaging/main/figures/thesis_ratedistortion.png" width="100%" alt="fraction of Fourier coefficients kept versus reconstruction error, for signals and images">
+<img src="https://raw.githubusercontent.com/JCMontalbo/compressive-imaging/main/figures/hero.gif" width="100%" alt="top: a natural image rebuilt from a growing fraction of its Fourier coefficients; bottom: a radar target rebuilt from a growing fraction of its phase-history samples, by zero-filling and by image-domain l1">
 </p>
 
-*The thesis's idea measured as the rate–distortion curve it is: a natural image reconstructs to 8% error from **1%** of its Fourier coefficients and 4% from 5%. Dots are my K-ratio threshold; lines are plain top-k — they pick in the same order.*
+*What you are looking at. **Top row** is the thesis's idea: a natural image rebuilt from only its largest Fourier coefficients, sweeping from 0.05% of them up to 30%, with the coefficients kept drawn in k-space beside it. At 1% the picture is recognisable (8% error); at 5% the error is 4%. **Bottom row** is the radar imaging the thesis pointed at: a 39-scatterer target rebuilt from a growing fraction of its phase-history samples. The same samples give two different answers depending on where you assume sparsity — assume it in the data (zero-fill) and you get noise until well past 40%; assume it in the image (ℓ₁) and the target is there from about 10%. That one decision is the whole radar result.*
 
 | | what I found |
 |---|---|
