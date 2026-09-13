@@ -41,7 +41,7 @@ The same idea moved to the setting it was designed for. Here the "video" is a st
 | | 4+ slices / patient | 0.868 | 0.885 affine | advantage gone, as I expected |
 | **Natural video** (DAVIS 2016, J-mean) | 1–2 frames / video | 0.337 / 0.383 | **0.385 / 0.420** flip-rotate-scale | loses — a flipped bear is still a bear, so flips are free there |
 
-That is the result I hoped for in 2020: the method helps exactly where it was designed to help — anatomy, with very few labels — and fades as labels accumulate. The video result is the boundary of the claim, and it sits in the README next to the MRI result. The repo also has the video work the idea grew out of: streaming augmentation over a clip, new in-between frames validated against held-out real ones (32.9 dB vs 30.0 dB for blending), 4× slow motion, families of synthetic clips, and labels carried through a video and through an MRI volume from a single annotated slice (IoU 0.91 five slices away, 0.83 at ten). 34 tests, CI on Python 3.10–3.13.
+That is the result I hoped for in 2020: the method helps exactly where it was designed to help — anatomy, with very few labels — and fades as labels accumulate. The video result is the boundary of the claim, and it sits in the README next to the MRI result. The repo also has the video work the idea grew out of: streaming augmentation over a clip, new in-between frames validated against held-out real ones (32.9 dB vs 30.0 dB for blending), 4× slow motion, families of synthetic clips, and labels carried through a video from a single annotated frame. 34 tests, CI on Python 3.10–3.13.
 
 ### [compressive-imaging](https://github.com/JCMontalbo/compressive-imaging) — my master's thesis, reproduced and carried through
 
