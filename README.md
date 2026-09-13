@@ -26,6 +26,14 @@ My dissertation treated optical flow as an inverse problem: recover the motion f
 
 *What you are looking at. **Top left** is the real footage. The red outline is a label of the character drawn on every frame; the cyan outline was drawn on the first frame only and is carried through the clip by the recovered motion field. **The other three panels are not footage** — they are new clips generated from the real one by modifying the recovered motion: in one, the region under the tracked window moves three times as fast; in the others, a localised area-preserving swirl or squeeze pulses through it. The cyan outline in those panels was carried along the same modification as the pixels, so every generated frame arrives with its own label — which is what makes generated data usable for training.*
 
+The same idea moved to the setting it was designed for. Here the "video" is a stack of MRI slices through a patient's heart, the motion between neighbouring slices is recovered the same way, and one annotated slice is enough to label the rest:
+
+<p align="center">
+<img src="https://raw.githubusercontent.com/JCMontalbo/optical-flow-inverse/main/figures/heart_propagation.gif" width="100%" alt="a label drawn on one MRI slice, carried through a held-out patient's volume along the recovered flow">
+</p>
+
+*A patient the model never saw. I labelled the left atrium on one slice (red is the ground truth on every slice); the cyan outline is that single label carried up and down the volume along the recovered slice-to-slice flow — IoU 0.91 five slices away, 0.83 at ten. Every synthetic slice made by perturbing that flow arrives with its label the same way, which is what let me train on it. That training is the experiment below.*
+
 | setting | labels | recovered-flow augmentation | best alternative | outcome |
 |---|---|---|---|---|
 | **Cardiac MRI** (MSD Heart, left atrium, 3D Dice on 6 held-out patients) | 1 slice / patient | **0.680** | 0.634 random elastic · 0.568 affine · 0.581 none | **best of five** (+11 over affine, +4.6 over elastic; 3 seeds) |
