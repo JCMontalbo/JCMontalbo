@@ -21,10 +21,10 @@ My research has one through-line: recover structure from incomplete or degraded 
 My dissertation treated optical flow as an inverse problem: recover the motion field between two images (Horn–Schunck, with PDE regularization), and then — the part I cared about — *use* the recovered field. Scale it, gate it inside Gaussian windows, perturb it with area-preserving generators, and propagate the first image forward along the result. Every image you get is a plausible new image, because the motion it was made from was observed, not invented. I proposed this as training-data augmentation for medical imaging, where you cannot flip or rotate a slice without producing an impossible patient, and I ran out of time before I could test it. So the repo does, and it carries the labels along with the images, which is what makes the generated data trainable.
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/JCMontalbo/optical-flow-inverse/main/figures/heart_predictions.gif" width="100%" alt="three segmenters trained on one labelled slice per patient, swept through a held-out patient">
+<img src="https://raw.githubusercontent.com/JCMontalbo/optical-flow-inverse/main/figures/video/labels.gif" width="100%" alt="a real clip with a label carried through it by the flow, and three synthetic clips generated from it, each carrying its own label">
 </p>
 
-*Three segmenters, each trained on **one** labelled slice per patient, swept through a patient none of them saw: truth in red; trained with affine augmentation (orange), random elastic deformation (green), and my recovered-flow family (cyan).*
+*What you are looking at. **Top left** is the real footage. The red outline is a label of the character drawn on every frame; the cyan outline was drawn on the first frame only and is carried through the clip by the recovered motion field. **The other three panels are not footage** — they are new clips generated from the real one by modifying the recovered motion: in one, the region under the tracked window moves three times as fast; in the others, a localised area-preserving swirl or squeeze pulses through it. The cyan outline in those panels was carried along the same modification as the pixels, so every generated frame arrives with its own label — which is what makes generated data usable for training.*
 
 | setting | labels | recovered-flow augmentation | best alternative | outcome |
 |---|---|---|---|---|
