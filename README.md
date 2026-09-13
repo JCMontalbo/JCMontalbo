@@ -21,8 +21,10 @@ My research is in inverse problems and sparse reconstruction — recovering stru
 Recover the motion field between two images (Horn–Schunck, a regularized inverse problem), transform it — globally, inside Gaussian windows, or by area-preserving generators — and propagate the first image *and its label* along the result. The dissertation proposed this as training-data augmentation for anatomy, where flipping or rotating an image produces an impossible patient, but never had time to test it. This repo does, with the pass/fail criteria pre-registered in git before each run:
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/JCMontalbo/optical-flow-inverse/main/figures/heart_augmentation.gif" width="100%" alt="one labelled MRI slice; each frame a fresh sample from each augmentation arm">
+<img src="https://raw.githubusercontent.com/JCMontalbo/optical-flow-inverse/main/figures/heart_propagation.gif" width="100%" alt="a label drawn on one MRI slice, carried through a held-out patient's volume along the recovered flow">
 </p>
+
+*One slice of a patient the model never saw is labelled; the label is carried through the whole volume along the recovered flow (cyan) against the truth (red).*
 
 | setting | labels | recovered-flow augmentation | best alternative | verdict |
 |---|---|---|---|---|
