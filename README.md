@@ -37,13 +37,13 @@ The claim holds where it was made for and fails where it was never meant to appl
 
 ### [compressive-imaging](https://github.com/JCMontalbo/compressive-imaging) — my master's work, done the way its conclusion asked
 
-My master's thesis and two SPIE papers (2015–16) studied sparse approximation and ℓ₁ recovery for radar signals and noisy video with off-the-shelf solvers; the ISAR paper's reconstruction did not work and said so, and the thesis closed by asking for "our own compressive sensing algorithm." This repo writes the solvers from scratch (ISTA/FISTA, OMP, CoSaMP, IRLS, ADMM, a log-barrier interior point, Fourier-domain TV), each tested against theory, and then goes back to the papers with the pass/fail lines written down first:
+My master's thesis studied sparse approximation and ℓ₁ recovery for radar signals with off-the-shelf solvers, derived the radar scattering model without imaging with it, and closed by asking for "our own compressive sensing algorithm … within the radar system process." This repo writes the solvers from scratch (ISTA/FISTA, OMP, CoSaMP, IRLS, ADMM, a log-barrier interior point, Fourier-domain TV), each tested against theory, and then does what the thesis asked, with the pass/fail lines written down first:
 
 | what | finding |
 |---|---|
-| **2016 ISAR paper** — why the reconstruction failed | Sparsity was applied to the phase history, which holds 22 % of its energy in its 37 largest samples; the *image* is exactly 37-sparse. Same 22.5 % of samples, image-domain ℓ₁: **F1 0.56 → 1.00**, with or without noise. Plus the phase transition, sub-cell resolution (0.6 cells), and motion compensation that now works. |
-| **Master's thesis** — its test signals | Never sparse (aliased, off-bin tones: 93 % of energy in the top 10 coefficients), which is why its ℓ₁ step "needed the original signal." With sparse tones, the thesis's own sampler and an interior-point solve recover exactly from **13 % of samples**; TV from 22 radial lines to 2.4 %. |
-| **2015 video paper** | Its ranking reproduces (FISTA > IRLS > CoSaMP > OMP); its gain does not on textured footage — column-DCT sparsity barely beats the noisy input. Motion-compensated residuals (flow from the repo above) add 0.3–0.5 dB; frame differencing hurts. Pre-registered 30 dB target not met. |
+| **The radar imaging the thesis pointed at** | Turntable ISAR built from the thesis's scattering model and sampled at 22.5 %. The decision that makes or breaks it: sparsity assumed in the *data* (15 % of its energy in its 39 largest samples) gives F1 0.54; in the *image* (exactly 39-sparse) gives **0.96, the full-data ceiling**, with or without noise. Plus the phase transition, sub-cell resolution (0.6 cells), and motion compensation that works on the compressed samples. |
+| **The thesis's own test signals** | Never sparse (aliased, off-bin tones: 93 % of energy in the top 10 coefficients) — which is why its ℓ₁ step "needed the original signal." With sparse tones, the thesis's own sampler and an interior-point solve recover exactly from **13 % of samples**; TV from 22 radial Fourier lines to 2.4 %. |
+| **A 2015 noisy-video paper I co-authored** | Its ranking reproduces (FISTA > IRLS > CoSaMP > OMP); its gain does not on textured footage. Motion-compensated residuals (flow from the repo above) add 0.3–0.5 dB; frame differencing hurts. Pre-registered 30 dB target not met. |
 
 **Publications**
 - *Sparse Representation for ISAR Image Reconstruction.* Proc. SPIE 9857, 2016.
